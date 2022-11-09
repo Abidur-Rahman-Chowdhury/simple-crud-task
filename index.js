@@ -36,6 +36,15 @@ async function run() {
         const result = await minionCollection.deleteOne(query)
         res.send(result)
     })
+      
+    //   get all minions
+      
+    app.get('/allMinions', async (req, res) => {
+        const query = {}
+        const cursor = minionCollection.find(query)
+        const result = await cursor.toArray()
+        res.send(result)
+    });
 
   } finally {
   }
