@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors());
 app.use(express.json());
@@ -28,24 +28,44 @@ async function run() {
       const result = await minionCollection.insertOne(minionObject);
       res.send(result);
     });
-      
-    // deleting minion   
+
+    // deleting minion
     app.delete('/Delete/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) }
-        const result = await minionCollection.deleteOne(query)
-        res.send(result)
-    })
-      
-    //   get all minions
-      
-    app.get('/allMinions', async (req, res) => {
-        const query = {}
-        const cursor = minionCollection.find(query)
-        const result = await cursor.toArray()
-        res.send(result)
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await minionCollection.deleteOne(query);
+      res.send(result);
     });
 
+    //   get all minions
+
+    app.get('/allMinions', async (req, res) => {
+      const query = {};
+      const cursor = minionCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //   update minion
+    app.put('/update/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateMinion = req.body;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      const updateDoc = {
+          $set: {
+          name:updateMinion.name,
+          age:updateMinion.age,
+          color:updateMinion.color,
+        },
+      };
+      const result = await minionCollection.updateOne(
+        filter,
+        updateDoc,
+        option
+      );
+      res.send(result);
+    });
   } finally {
   }
 }
